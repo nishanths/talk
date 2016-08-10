@@ -23,7 +23,7 @@ Essentially
 
 .code code/router/old_call.go
 
-Out of order
+Reversed order.
 
 * Long handler signatures
 
@@ -76,6 +76,7 @@ Old
 
 - No more out of order middleware registration
 - Support for chaining middleware
+- Clear separation b/w middleware and request handler
 - Intuitive to read, less verbose to write
 - Now in use in luci-go, infra, infra_internal
 .link https://github.com/luci/luci-go/server/router
@@ -85,10 +86,24 @@ Old
 * Test Results server
 
 - Used by flakiness dashboard, monitoring services
-- App Engine application, [[https://test-results.appspot.com]]
+- App Engine application
 - Saves and retrieves Chromium test results
 - Cron jobs to update builder status
 - Currently in Python
+
+[[https://test-results.appspot.com]]
+[[https://test-results.appspot.com/dashboards/flakiness_dashboard.html]]
+
+* Test results and flakiness
+
+Get results: /testilfe
+Bots upload results: /testfile/upload
+
+.image img/flakiness_dash.png 300 800
+
+* Test results and flakiness
+
+.image img/flakiness_dash_detailed.png 300 900
 
 * Performance
 
@@ -96,21 +111,32 @@ Old
 
 - Fetches build extracts and updates builder names
 - Concurrent HTTP requests
-- Python version: ~45 seconds
-- Go version: ~7 seconds
 
-6x faster, can compute builders information more frequently if needed
+.code code/buildextr1
+.code code/buildextr2
+
+* Performance (contd.)
+
+*/updatebuilders*
+
+- Python version: ~45 seconds on average
+- Go version: ~17 seconds on average
+
+.video video/updatebuilders.ogv video/ogg 400 600
+
+2.5x faster, can compute builders information more frequently if needed
 
 * Fewer failures
 
 Requests that failed on Python app no longer fail in Go app
+
+.code code/failure_url
 
 * 
 .background img/screenshot_python_500.png
 
 * 
 .background img/screenshot_go_200.png
-
 
 * Follow Google style guide (omit optional tags in HTML)
 
@@ -126,6 +152,8 @@ Old
 - Correct HTTP status codes
 
 * What's next?
+
+.html table.html
 
 - Upload handler end of week, hopefully
 - eventmon in Go (work in progress)
