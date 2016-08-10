@@ -1,0 +1,142 @@
+Flakiness Dashboard v2
+Type safety, improved performance
+12:00 12 Jul 2016
+Tags: appengine, chromium, infrastructure, flakiness
+
+Nishanth Shanmugham
+nishanths@google.com
+
+* Topics
+
+- Improve HTTP router
+- Implement Flakiness Dashboard server in Go
+
+* Improve HTTP router
+
+* Issues with old router
+
+* Middleware
+
+.code code/router/old_router.go 
+
+Essentially
+
+.code code/router/old_call.go
+
+Out of order
+
+* Long handler signatures
+
+.code code/router/old_func_signature.go
+
+* Summary
+
+- Middleware registration is opposite order of actual execution
+- Explicit chaining
+- Long function signatures
+*Can*we*do*better?*
+
+* New router
+
+* Middleware
+
+Create middleware chain
+
+.code code/router/new_router.go
+
+Register middleware and handler
+
+.code code/router/new_router_2.go
+
+* Compare to old router
+
+New
+
+.code code/router/new_router_full.go
+
+Old 
+
+.code code/router/old_router.go 
+
+* Less verbose handler signature
+
+.code code/router/new_func_signature.go /START OMIT/,/END OMIT/
+
+* Compare to old router
+
+New
+
+.code code/router/new_func_signature_2.go /START OMIT/,/END OMIT/
+
+Old
+
+.code code/router/old_func_signature.go
+
+* New router
+
+- No more out of order middleware registration
+- Support for chaining middleware
+- Intuitive to read, less verbose to write
+- Now in use in luci-go, infra, infra_internal
+.link https://github.com/luci/luci-go/server/router
+
+* Flakiness Dashboard v2
+
+* Test Results server
+
+- Used by flakiness dashboard, monitoring services
+- App Engine application, [[https://test-results.appspot.com]]
+- Saves and retrieves Chromium test results
+- Cron jobs to update builder status
+- Currently in Python
+
+* Performance
+
+*/updatebuilders*
+
+- Fetches build extracts and updates builder names
+- Concurrent HTTP requests
+- Python version: ~45 seconds
+- Go version: ~7 seconds
+
+6x faster, can compute builders information more frequently if needed
+
+* Fewer failures
+
+Requests that failed on Python app no longer fail in Go app
+
+* 
+.background img/screenshot_python_500.png
+
+* 
+.background img/screenshot_go_200.png
+
+
+* Follow Google style guide (omit optional tags in HTML)
+
+New
+.code code/new_html.html
+
+Old
+.code code/old_html.html
+
+* Other improvements
+
+- Improved logging
+- Correct HTTP status codes
+
+* What's next?
+
+- Upload handler end of week, hopefully
+- eventmon in Go (work in progress)
+
+.link https://go.test-results.appspot.com/testfile
+
+* Summary
+
+- Get, manipulate, and save test results (package model)
+- Type safety
+- Eliminated several failures
+- Better performance
+
+.link https://chromium.googlesource.com/infra/infra/+/master/go/src/infra/appengine/test-results infra/go/src/infra/appengine/test-results
